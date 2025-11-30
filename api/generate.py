@@ -58,22 +58,37 @@ def generate_portrait(image_data, style_id, api_key, base_url, custom_prompt=Non
     prompt = custom_prompt if custom_prompt else STYLE_PROMPTS.get(style_id, STYLE_PROMPTS["professional"])
     prompt = f"{prompt}. Generate a high-quality portrait photo based on the uploaded image, preserving the person's identity and facial features while applying the requested style transformation."
     
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=[
-            types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
-            prompt
-        ],
-        config=types.GenerateContentConfig(
-            response_modalities=["image", "text"]
-        )
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                types.Part.from_text(text=prompt),
+            ],
+        ),
+    ]
+    
+    generate_content_config = types.GenerateContentConfig(
+        response_modalities=["IMAGE", "TEXT"],
+        image_config=types.ImageConfig(image_size="1K"),
     )
     
-    for part in response.parts:
-        if part.inline_data is not None:
-            generated_bytes = part.inline_data.data
-            generated_mime = part.inline_data.mime_type or "image/png"
-            encoded = base64.b64encode(generated_bytes).decode("utf-8")
+    for chunk in client.models.generate_content_stream(
+        model=MODEL_NAME,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        if (
+            chunk.candidates is None
+            or chunk.candidates[0].content is None
+            or chunk.candidates[0].content.parts is None
+        ):
+            continue
+        
+        inline_data = chunk.candidates[0].content.parts[0].inline_data
+        if inline_data and inline_data.data:
+            generated_mime = inline_data.mime_type or "image/png"
+            encoded = base64.b64encode(inline_data.data).decode("utf-8")
             return f"data:{generated_mime};base64,{encoded}"
     
     raise Exception("模型未返回图片")
