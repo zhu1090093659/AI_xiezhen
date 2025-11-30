@@ -24,7 +24,6 @@
     }
   ],
   "env": {
-    "GOOGLE_API_KEY": "@google-api-key",
     "API_BASE_URL": "https://one-api.bltcy.top"
   }
 }
