@@ -1,10 +1,17 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import SettingsModal, { getStoredSettings } from './SettingsModal'
 
 export default function Header() {
   const [showSettings, setShowSettings] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hasApiKey = !!getStoredSettings().apiKey
+
+  const navLinks = [
+    { href: '#', label: '功能介绍' },
+    { href: '#styles', label: '风格展示' },
+    { href: '#', label: '关于我们' },
+  ]
 
   return (
     <>
@@ -12,9 +19,10 @@ export default function Header() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-silver-100"
+        className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-silver-100
+                   safe-area-inset-top"
       >
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-silver-700 to-silver-900 
                           flex items-center justify-center">
@@ -29,21 +37,19 @@ export default function Header() {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-sm text-silver-600 hover:text-silver-800 transition-colors">
-              功能介绍
-            </a>
-            <a href="#" className="text-sm text-silver-600 hover:text-silver-800 transition-colors">
-              风格展示
-            </a>
-            <a href="#" className="text-sm text-silver-600 hover:text-silver-800 transition-colors">
-              关于我们
-            </a>
+            {navLinks.map((link) => (
+              <a key={link.label} href={link.href} 
+                 className="text-sm text-silver-600 hover:text-silver-800 transition-colors">
+                {link.label}
+              </a>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button 
               onClick={() => setShowSettings(true)}
-              className="relative p-2 hover:bg-silver-100 rounded-lg transition-colors group"
+              className="relative p-2.5 hover:bg-silver-100 rounded-lg transition-colors group
+                       touch-manipulation"
               title="API 设置"
             >
               <svg className="w-5 h-5 text-silver-600 group-hover:text-silver-800" 
@@ -54,16 +60,71 @@ export default function Header() {
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               {!hasApiKey && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full 
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full 
                                animate-pulse" />
               )}
             </button>
-            <button className="px-4 py-2 bg-silver-800 text-white text-sm rounded-full 
-                             hover:bg-silver-700 transition-colors">
+            
+            <button className="hidden sm:block px-4 py-2 bg-silver-800 text-white text-sm rounded-full 
+                             hover:bg-silver-700 transition-colors touch-manipulation">
               开始使用
+            </button>
+
+            {/* Mobile menu button */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2.5 hover:bg-silver-100 rounded-lg transition-colors
+                       touch-manipulation"
+              aria-label="菜单"
+            >
+              <svg className="w-5 h-5 text-silver-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
             </button>
           </div>
         </div>
+
+        {/* Mobile menu dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden border-t border-silver-100 bg-white/95 backdrop-blur-xl overflow-hidden"
+            >
+              <nav className="px-4 py-3 space-y-1">
+                {navLinks.map((link) => (
+                  <a 
+                    key={link.label} 
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 text-silver-600 hover:text-silver-800 
+                             hover:bg-silver-50 rounded-xl transition-colors text-base
+                             touch-manipulation"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                <div className="pt-2 pb-1">
+                  <a 
+                    href="#upload"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block w-full px-4 py-3 bg-silver-800 text-white text-center 
+                             rounded-xl hover:bg-silver-700 transition-colors touch-manipulation"
+                  >
+                    开始使用
+                  </a>
+                </div>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.header>
 
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />

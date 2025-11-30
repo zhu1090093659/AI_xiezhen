@@ -55,18 +55,25 @@ export default function SettingsModal({ isOpen, onClose }) {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={onClose}
           />
+          {/* Desktop: center modal, Mobile: bottom sheet */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
-                       w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
+            initial={{ opacity: 0, y: '100%' }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-0 left-0 right-0 z-50 w-full bg-white 
+                       rounded-t-3xl shadow-2xl p-5 pb-safe
+                       sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
+                       sm:max-w-md sm:rounded-2xl sm:p-6"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-silver-800">API 设置</h2>
+            {/* Mobile drag handle */}
+            <div className="sm:hidden w-10 h-1 bg-silver-300 rounded-full mx-auto mb-4" />
+            
+            <div className="flex items-center justify-between mb-5 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-silver-800">API 设置</h2>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-silver-100 rounded-lg transition-colors"
+                className="p-2.5 hover:bg-silver-100 rounded-lg transition-colors touch-manipulation"
               >
                 <svg className="w-5 h-5 text-silver-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -74,7 +81,7 @@ export default function SettingsModal({ isOpen, onClose }) {
               </button>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-4 sm:space-y-5">
               <div>
                 <label className="block text-sm font-medium text-silver-700 mb-2">
                   API Key <span className="text-red-500">*</span>
@@ -85,15 +92,15 @@ export default function SettingsModal({ isOpen, onClose }) {
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="sk-..."
-                    className="w-full px-4 py-3 pr-12 border border-silver-200 rounded-xl
+                    className="w-full px-4 py-3.5 sm:py-3 pr-12 border border-silver-200 rounded-xl
                              focus:outline-none focus:ring-2 focus:ring-silver-500 focus:border-transparent
-                             text-silver-800 placeholder-silver-400"
+                             text-silver-800 placeholder-silver-400 text-base"
                   />
                   <button
                     type="button"
                     onClick={() => setShowKey(!showKey)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 
-                             hover:bg-silver-100 rounded-lg transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 
+                             hover:bg-silver-100 rounded-lg transition-colors touch-manipulation"
                   >
                     {showKey ? (
                       <svg className="w-5 h-5 text-silver-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,9 +131,9 @@ export default function SettingsModal({ isOpen, onClose }) {
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
                   placeholder="https://one-api.bltcy.top"
-                  className="w-full px-4 py-3 border border-silver-200 rounded-xl
+                  className="w-full px-4 py-3.5 sm:py-3 border border-silver-200 rounded-xl
                            focus:outline-none focus:ring-2 focus:ring-silver-500 focus:border-transparent
-                           text-silver-800 placeholder-silver-400"
+                           text-silver-800 placeholder-silver-400 text-base"
                 />
                 <p className="mt-1.5 text-xs text-silver-500">
                   默认使用 one-api.bltcy.top，可自定义其他兼容接口
@@ -134,40 +141,42 @@ export default function SettingsModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 mt-8">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-3 mt-6 sm:mt-8">
               <button
                 onClick={handleClear}
-                className="px-4 py-2.5 text-sm text-silver-600 hover:text-silver-800
-                         hover:bg-silver-100 rounded-xl transition-colors"
+                className="px-4 py-3 sm:py-2.5 text-sm text-silver-600 hover:text-silver-800
+                         hover:bg-silver-100 rounded-xl transition-colors touch-manipulation"
               >
                 清除配置
               </button>
-              <div className="flex-1" />
-              <button
-                onClick={onClose}
-                className="px-5 py-2.5 text-sm text-silver-600 hover:bg-silver-100
-                         rounded-xl transition-colors"
-              >
-                取消
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={!apiKey.trim()}
-                className="px-5 py-2.5 text-sm bg-silver-800 text-white rounded-xl
-                         hover:bg-silver-700 transition-colors disabled:opacity-50 
-                         disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {saved ? (
-                  <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    已保存
-                  </>
-                ) : (
-                  '保存设置'
-                )}
-              </button>
+              <div className="hidden sm:block flex-1" />
+              <div className="flex gap-3 sm:contents">
+                <button
+                  onClick={onClose}
+                  className="flex-1 sm:flex-none px-5 py-3 sm:py-2.5 text-sm text-silver-600 
+                           hover:bg-silver-100 rounded-xl transition-colors touch-manipulation"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={!apiKey.trim()}
+                  className="flex-1 sm:flex-none px-5 py-3 sm:py-2.5 text-sm bg-silver-800 text-white rounded-xl
+                           hover:bg-silver-700 transition-colors disabled:opacity-50 
+                           disabled:cursor-not-allowed flex items-center justify-center gap-2 touch-manipulation"
+                >
+                  {saved ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      已保存
+                    </>
+                  ) : (
+                    '保存设置'
+                  )}
+                </button>
+              </div>
             </div>
           </motion.div>
         </>

@@ -1,8 +1,8 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-silver-100 bg-white/50 backdrop-blur">
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer className="border-t border-silver-100 bg-white/50 backdrop-blur safe-area-inset-bottom">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <div className="flex items-center gap-2 text-silver-600">
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-silver-700 to-silver-900 
                           flex items-center justify-center">
@@ -14,13 +14,16 @@ export default function Footer() {
             <span className="text-sm font-medium">AI 写真</span>
           </div>
 
-          <div className="flex items-center gap-6 text-sm text-silver-500">
-            <a href="#" className="hover:text-silver-700 transition-colors">隐私政策</a>
-            <a href="#" className="hover:text-silver-700 transition-colors">使用条款</a>
-            <a href="#" className="hover:text-silver-700 transition-colors">联系我们</a>
+          <div className="flex items-center gap-5 sm:gap-6 text-xs sm:text-sm text-silver-500">
+            <a href="#" className="hover:text-silver-700 active:text-silver-800 transition-colors 
+                                 py-1 touch-manipulation">隐私政策</a>
+            <a href="#" className="hover:text-silver-700 active:text-silver-800 transition-colors 
+                                 py-1 touch-manipulation">使用条款</a>
+            <a href="#" className="hover:text-silver-700 active:text-silver-800 transition-colors 
+                                 py-1 touch-manipulation">联系我们</a>
           </div>
 
-          <p className="text-sm text-silver-400">
+          <p className="text-xs sm:text-sm text-silver-400">
             © 2024 AI 写真. 保留所有权利.
           </p>
         </div>

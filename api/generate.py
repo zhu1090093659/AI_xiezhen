@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 
 DEFAULT_BASE_URL = "https://one-api.bltcy.top"
-MODEL_NAME = "nano-banana-2-4k"
+MODEL_NAME = "nano-banana-2-2k"
 
 STYLE_PROMPTS = {
     "professional": "Transform this person into a professional business portrait, elegant suit, confident pose, studio lighting, high-end corporate style, maintain facial features exactly",

@@ -69,7 +69,7 @@ const STYLES = [
 
 export default function StyleSelector({ selectedStyle, onStyleSelect }) {
   return (
-    <div id="styles" className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div id="styles" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
       {STYLES.map((style, index) => (
         <motion.button
           key={style.id}
@@ -77,40 +77,41 @@ export default function StyleSelector({ selectedStyle, onStyleSelect }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: index * 0.05 }}
           whileHover={{ scale: 1.02, y: -4 }}
-          whileTap={{ scale: 0.98 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => onStyleSelect(style)}
           className={`
-            relative overflow-hidden p-6 rounded-2xl text-left transition-all duration-300
+            relative overflow-hidden p-4 sm:p-6 rounded-xl sm:rounded-2xl text-left 
+            transition-all duration-300 touch-manipulation
             ${selectedStyle?.id === style.id 
               ? 'bg-silver-800 text-white shadow-apple-lg ring-2 ring-silver-800 ring-offset-2' 
-              : 'bg-white text-silver-800 shadow-apple hover:shadow-apple-hover'
+              : 'bg-white text-silver-800 shadow-apple active:shadow-apple-hover'
             }
           `}
         >
-          {/* 背景装饰 */}
+          {/* Background decoration */}
           <div className={`
-            absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl opacity-20
+            absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 rounded-full blur-2xl opacity-20
             bg-gradient-to-br ${style.gradient}
             ${selectedStyle?.id === style.id ? 'opacity-30' : ''}
           `} />
 
           <div className="relative">
-            <span className="text-2xl mb-3 block">{style.icon}</span>
-            <h3 className="font-semibold text-lg mb-1">{style.name}</h3>
-            <p className={`text-sm ${selectedStyle?.id === style.id ? 'text-silver-300' : 'text-silver-500'}`}>
+            <span className="text-xl sm:text-2xl mb-2 sm:mb-3 block">{style.icon}</span>
+            <h3 className="font-semibold text-base sm:text-lg mb-0.5 sm:mb-1">{style.name}</h3>
+            <p className={`text-xs sm:text-sm line-clamp-2 ${selectedStyle?.id === style.id ? 'text-silver-300' : 'text-silver-500'}`}>
               {style.description}
             </p>
           </div>
 
-          {/* 选中标记 */}
+          {/* Selection indicator */}
           {selectedStyle?.id === style.id && (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute top-3 right-3 w-6 h-6 bg-white rounded-full 
-                       flex items-center justify-center"
+              className="absolute top-2 sm:top-3 right-2 sm:right-3 w-5 sm:w-6 h-5 sm:h-6 
+                       bg-white rounded-full flex items-center justify-center"
             >
-              <svg className="w-4 h-4 text-silver-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3 sm:w-4 h-3 sm:h-4 text-silver-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </motion.div>

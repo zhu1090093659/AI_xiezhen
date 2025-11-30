@@ -80,24 +80,24 @@ function App() {
       <main className="flex-1">
         <Hero />
         
-        <section className="max-w-6xl mx-auto px-6 py-16">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-16"
+            className="space-y-10 sm:space-y-16"
           >
-            {/* 步骤 1: 上传照片 */}
-            <div className="space-y-6">
+            {/* Step 1: Upload photo */}
+            <div className="space-y-4 sm:space-y-6">
               <div className="text-center">
-                <span className="inline-block px-4 py-1 bg-silver-100 text-silver-600 
-                               rounded-full text-sm font-medium mb-4">
+                <span className="inline-block px-3 sm:px-4 py-1 bg-silver-100 text-silver-600 
+                               rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
                   步骤 1
                 </span>
-                <h2 className="text-3xl font-semibold text-silver-800 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-silver-800 tracking-tight">
                   上传您的照片
                 </h2>
-                <p className="text-silver-500 mt-2">
+                <p className="text-silver-500 mt-2 text-sm sm:text-base">
                   选择一张清晰的正面照片，获得最佳效果
                 </p>
               </div>
@@ -107,24 +107,24 @@ function App() {
               />
             </div>
 
-            {/* 步骤 2: 选择风格 */}
+            {/* Step 2: Select style */}
             <AnimatePresence>
               {uploadedImage && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="space-y-6"
+                  className="space-y-4 sm:space-y-6"
                 >
                   <div className="text-center">
-                    <span className="inline-block px-4 py-1 bg-silver-100 text-silver-600 
-                                   rounded-full text-sm font-medium mb-4">
+                    <span className="inline-block px-3 sm:px-4 py-1 bg-silver-100 text-silver-600 
+                                   rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
                       步骤 2
                     </span>
-                    <h2 className="text-3xl font-semibold text-silver-800 tracking-tight">
+                    <h2 className="text-2xl sm:text-3xl font-semibold text-silver-800 tracking-tight">
                       选择写真风格
                     </h2>
-                    <p className="text-silver-500 mt-2">
+                    <p className="text-silver-500 mt-2 text-sm sm:text-base">
                       挑选您喜欢的风格，AI 将为您量身定制
                     </p>
                   </div>
@@ -136,23 +136,24 @@ function App() {
               )}
             </AnimatePresence>
 
-            {/* 生成按钮 */}
+            {/* Generate button */}
             <AnimatePresence>
               {uploadedImage && selectedStyle && !generatedImage && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="text-center"
+                  className="text-center px-4"
                 >
                   <button
                     onClick={handleGenerate}
                     disabled={isGenerating}
-                    className="btn-primary text-lg px-12 py-4 disabled:opacity-50 
-                             disabled:cursor-not-allowed"
+                    className="btn-primary text-base sm:text-lg px-8 sm:px-12 py-3.5 sm:py-4 
+                             disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto
+                             touch-manipulation"
                   >
                     {isGenerating ? (
-                      <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center gap-3">
                         <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" 
                                   stroke="currentColor" strokeWidth="4" fill="none" />
