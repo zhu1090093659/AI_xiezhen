@@ -78,18 +78,24 @@ def generate_portrait(image_data, style_id, api_key, base_url, custom_prompt=Non
         contents=contents,
         config=generate_content_config,
     ):
-        if (
-            chunk.candidates is None
-            or chunk.candidates[0].content is None
-            or chunk.candidates[0].content.parts is None
-        ):
+        candidates = getattr(chunk, 'candidates', None)
+        if not candidates:
             continue
         
-        inline_data = chunk.candidates[0].content.parts[0].inline_data
-        if inline_data and inline_data.data:
-            generated_mime = inline_data.mime_type or "image/png"
-            encoded = base64.b64encode(inline_data.data).decode("utf-8")
-            return f"data:{generated_mime};base64,{encoded}"
+        content = getattr(candidates[0], 'content', None)
+        if not content:
+            continue
+        
+        parts = getattr(content, 'parts', None)
+        if not parts:
+            continue
+        
+        for part in parts:
+            inline_data = getattr(part, 'inline_data', None)
+            if inline_data and getattr(inline_data, 'data', None):
+                generated_mime = getattr(inline_data, 'mime_type', None) or "image/png"
+                encoded = base64.b64encode(inline_data.data).decode("utf-8")
+                return f"data:{generated_mime};base64,{encoded}"
     
     raise Exception("模型未返回图片")
 
