@@ -1,13 +1,11 @@
 """AI 写真生成 API - Vercel Serverless Function"""
-import os
 import json
 import base64
 from http.server import BaseHTTPRequestHandler
 from google import genai
 from google.genai import types
 
-API_KEY = os.environ.get("GOOGLE_API_KEY", "sk-OI98X2iylUhYtncA518f4c7dEa0746A290D590B90c941d01")
-BASE_URL = os.environ.get("API_BASE_URL", "https://one-api.bltcy.top")
+DEFAULT_BASE_URL = "https://one-api.bltcy.top"
 MODEL_NAME = "nano-banana-2-4k"
 
 STYLE_PROMPTS = {
@@ -48,11 +46,11 @@ def decode_base64_image(data_url):
     return base64.b64decode(data), mime_type
 
 
-def generate_portrait(image_data, style_id, custom_prompt=None):
+def generate_portrait(image_data, style_id, api_key, base_url, custom_prompt=None):
     """调用 AI 模型生成写真"""
     client = genai.Client(
-        api_key=API_KEY,
-        http_options={"base_url": BASE_URL}
+        api_key=api_key,
+        http_options={"base_url": base_url or DEFAULT_BASE_URL}
     )
     
     image_bytes, mime_type = decode_base64_image(image_data)
@@ -87,12 +85,22 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, X-Base-URL")
         self.end_headers()
 
     def do_POST(self):
         """处理生成请求"""
         try:
+            api_key = self.headers.get("X-API-Key", "")
+            base_url = self.headers.get("X-Base-URL", DEFAULT_BASE_URL)
+            
+            if not api_key:
+                self.send_json_response(401, {
+                    "success": False,
+                    "message": "请先配置 API Key"
+                })
+                return
+            
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length)
             data = json.loads(body.decode("utf-8"))
@@ -108,7 +116,7 @@ class handler(BaseHTTPRequestHandler):
                 })
                 return
             
-            generated_image = generate_portrait(image, style, prompt)
+            generated_image = generate_portrait(image, style, api_key, base_url, prompt)
             
             self.send_json_response(200, {
                 "success": True,

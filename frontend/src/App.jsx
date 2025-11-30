@@ -6,6 +6,7 @@ import UploadSection from './components/UploadSection'
 import StyleSelector from './components/StyleSelector'
 import ResultSection from './components/ResultSection'
 import Footer from './components/Footer'
+import { getStoredSettings } from './components/SettingsModal'
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(null)
@@ -27,13 +28,23 @@ function App() {
   const handleGenerate = async () => {
     if (!uploadedImage || !selectedStyle) return
 
+    const settings = getStoredSettings()
+    if (!settings.apiKey) {
+      setError('请先点击右上角设置按钮配置 API Key')
+      return
+    }
+
     setIsGenerating(true)
     setError(null)
 
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-API-Key': settings.apiKey,
+          'X-Base-URL': settings.baseUrl
+        },
         body: JSON.stringify({
           image: uploadedImage,
           style: selectedStyle.id,

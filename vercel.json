@@ -22,9 +22,6 @@
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ],
-  "env": {
-    "API_BASE_URL": "https://one-api.bltcy.top"
-  }
+  ]
 }
 
