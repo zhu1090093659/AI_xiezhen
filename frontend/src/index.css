@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, #fafafa 0%, #f5f5f7 100%);
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-8 py-3 bg-silver-800 text-white rounded-full font-medium
+           transition-all duration-300 hover:bg-silver-700 
+           hover:shadow-apple-hover active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply px-8 py-3 bg-white text-silver-800 rounded-full font-medium
+           border border-silver-200 transition-all duration-300 
+           hover:bg-silver-50 hover:border-silver-300 
+           hover:shadow-apple active:scale-[0.98];
+  }
+
+  .card-apple {
+    @apply bg-white rounded-2xl shadow-apple transition-all duration-300
+           hover:shadow-apple-hover;
+  }
+
+  .input-apple {
+    @apply w-full px-4 py-3 bg-silver-50 border border-silver-200 rounded-xl
+           focus:outline-none focus:border-silver-400 focus:bg-white
+           transition-all duration-200 text-silver-800 placeholder:text-silver-400;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.loading-shimmer {
+  background: linear-gradient(90deg, #f5f5f7 25%, #e8e8ed 50%, #f5f5f7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
