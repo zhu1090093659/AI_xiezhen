@@ -36,3 +36,4 @@ Thumbs.db
 !frontend/public/*
 
 .vercel
+api/test_local.py
