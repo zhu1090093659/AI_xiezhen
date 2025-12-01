@@ -65,10 +65,10 @@ export default function Header() {
               )}
             </button>
             
-            <button className="hidden sm:block px-4 py-2 bg-silver-800 text-white text-sm rounded-full 
+            <a href="#upload" className="hidden sm:block px-4 py-2 bg-silver-800 text-white text-sm rounded-full 
                              hover:bg-silver-700 transition-colors touch-manipulation">
               开始使用
-            </button>
+            </a>
 
             {/* Mobile menu button */}
             <button 

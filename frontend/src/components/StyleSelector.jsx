@@ -69,7 +69,7 @@ const STYLES = [
 
 export default function StyleSelector({ selectedStyle, onStyleSelect }) {
   return (
-    <div id="styles" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {STYLES.map((style, index) => {
         const isSelected = selectedStyle?.id === style.id
         return (

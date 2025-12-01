@@ -62,7 +62,13 @@ function App() {
   }
 
   const handleStyleSelect = (style) => {
+    if (!uploadedImage) {
+      setError('请先上传照片')
+      document.getElementById('upload')?.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
     setSelectedStyle(style)
+    setError(null) // 清除之前的错误
   }
 
   const handleGenerate = async () => {
@@ -146,7 +152,7 @@ function App() {
             className="space-y-10 sm:space-y-16"
           >
             {/* Step 1: Upload photo */}
-            <div className="space-y-4 sm:space-y-6">
+            <div id="upload" className="space-y-4 sm:space-y-6 scroll-mt-24">
               <div className="text-center">
                 <span className="inline-block px-3 sm:px-4 py-1 bg-silver-100 text-silver-600 
                                rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
@@ -166,33 +172,24 @@ function App() {
             </div>
 
             {/* Step 2: Select style */}
-            <AnimatePresence>
-              {uploadedImage && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="space-y-4 sm:space-y-6"
-                >
-                  <div className="text-center">
-                    <span className="inline-block px-3 sm:px-4 py-1 bg-silver-100 text-silver-600 
-                                   rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
-                      步骤 2
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-silver-900 tracking-tight">
-                      选择写真风格
-                    </h2>
-                    <p className="text-silver-500 mt-2 text-sm sm:text-base">
-                      挑选您喜欢的风格，AI 将为您量身定制
-                    </p>
-                  </div>
-                  <StyleSelector 
-                    selectedStyle={selectedStyle}
-                    onStyleSelect={handleStyleSelect}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div id="styles" className="space-y-4 sm:space-y-6 scroll-mt-24">
+              <div className="text-center">
+                <span className="inline-block px-3 sm:px-4 py-1 bg-silver-100 text-silver-600 
+                               rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
+                  步骤 2
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-silver-900 tracking-tight">
+                  选择写真风格
+                </h2>
+                <p className="text-silver-500 mt-2 text-sm sm:text-base">
+                  挑选您喜欢的风格，AI 将为您量身定制
+                </p>
+              </div>
+              <StyleSelector 
+                selectedStyle={selectedStyle}
+                onStyleSelect={handleStyleSelect}
+              />
+            </div>
 
             {/* Generate button */}
             <AnimatePresence>
