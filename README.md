@@ -31,7 +31,7 @@ pip install -r requirements.txt
 2. 在 Vercel 导入项目
 3. 配置环境变量:
    - `GOOGLE_API_KEY`: API 密钥
-   - `API_BASE_URL`: API 基础 URL (默认 https://one-api.bltcy.top)
+   - `API_BASE_URL`: API 基础 URL (默认 https://one-api.bltcy.top/v1)
 4. 部署
 
 ## 功能特性

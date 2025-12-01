@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   baseUrl: 'ai_portrait_base_url'
 }
 
-const DEFAULT_BASE_URL = 'https://one-api.bltcy.top'
+const DEFAULT_BASE_URL = 'https://one-api.bltcy.top/v1'
 
 export function getStoredSettings() {
   return {
@@ -130,13 +130,13 @@ export default function SettingsModal({ isOpen, onClose }) {
                   type="url"
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
-                  placeholder="https://one-api.bltcy.top"
+                  placeholder="https://one-api.bltcy.top/v1"
                   className="w-full px-4 py-3.5 sm:py-3 border border-silver-200 rounded-xl
                            focus:outline-none focus:ring-2 focus:ring-silver-500 focus:border-transparent
                            text-silver-800 placeholder-silver-400 text-base"
                 />
                 <p className="mt-1.5 text-xs text-silver-500">
-                  默认使用 one-api.bltcy.top，可自定义其他兼容接口
+                  默认使用 one-api.bltcy.top/v1，可自定义其他兼容接口
                 </p>
               </div>
             </div>
