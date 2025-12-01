@@ -9,15 +9,26 @@ DEFAULT_BASE_URL = "https://one-api.bltcy.top/v1"
 MODEL_NAME = "nano-banana-2-4k"
 
 STYLE_PROMPTS = {
-    "professional": "Transform this person into a professional business portrait, elegant suit, confident pose, studio lighting, high-end corporate style, maintain facial features exactly",
-    "artistic": "Transform this person into an artistic portrait photography, dramatic lighting, fine art style, museum quality, cinematic mood, maintain facial features exactly",
-    "vintage": "Transform this person into a vintage film photography style, warm tones, grain texture, 1970s aesthetic, nostalgic atmosphere, maintain facial features exactly",
-    "futuristic": "Transform this person into a futuristic cyberpunk portrait, neon lights, holographic effects, sci-fi aesthetic, high-tech atmosphere, maintain facial features exactly",
-    "natural": "Transform this person into a natural outdoor portrait, soft golden hour lighting, fresh and clean look, botanical background, maintain facial features exactly",
-    "glamour": "Transform this person into a high fashion glamour portrait, magazine cover quality, dramatic makeup, runway style, editorial lighting, maintain facial features exactly",
-    "minimalist": "Transform this person into a minimalist portrait, clean white background, simple composition, elegant and refined, premium quality, maintain facial features exactly",
-    "cinematic": "Transform this person into a cinematic portrait, movie-like color grading, dramatic composition, theatrical lighting, film noir influence, maintain facial features exactly"
+    "professional": "Apply professional business portrait style: elegant suit, confident pose, studio lighting, high-end corporate aesthetic",
+    "artistic": "Apply artistic portrait style: dramatic lighting, fine art aesthetic, museum quality, cinematic mood",
+    "vintage": "Apply vintage film photography style: warm tones, grain texture, 1970s aesthetic, nostalgic atmosphere",
+    "futuristic": "Apply futuristic cyberpunk style: neon lights, holographic effects, sci-fi aesthetic, high-tech atmosphere",
+    "natural": "Apply natural outdoor portrait style: soft golden hour lighting, fresh and clean look, botanical background",
+    "glamour": "Apply high fashion glamour style: magazine cover quality, elegant makeup, runway aesthetic, editorial lighting",
+    "minimalist": "Apply minimalist portrait style: clean white background, simple composition, elegant and refined",
+    "cinematic": "Apply cinematic portrait style: movie-like color grading, dramatic composition, theatrical lighting"
 }
+
+# Core identity preservation prompt
+IDENTITY_PRESERVATION_PROMPT = """
+CRITICAL REQUIREMENTS - MUST FOLLOW:
+1. PRESERVE the EXACT same person's face, facial structure, eyes, nose, mouth, skin tone, and all facial features
+2. The person in the output image MUST be the SAME person as in the input image - NOT a different person
+3. DO NOT alter, modify, or replace the face with another person's face
+4. DO NOT change bone structure, face shape, eye shape, or any identifying facial characteristics
+5. Only modify lighting, background, clothing, atmosphere, and artistic style
+6. The output must pass as a photo of the SAME individual, just in a different style/setting
+"""
 
 
 def create_response(status_code, body):
@@ -55,8 +66,12 @@ def generate_portrait(image_data, style_id, api_key, base_url, custom_prompt=Non
     
     _, mime_type = decode_base64_image(image_data)
     
-    prompt = custom_prompt if custom_prompt else STYLE_PROMPTS.get(style_id, STYLE_PROMPTS["professional"])
-    prompt = f"{prompt}. Generate a high-quality portrait photo based on the uploaded image, preserving the person's identity and facial features while applying the requested style transformation."
+    style_prompt = custom_prompt if custom_prompt else STYLE_PROMPTS.get(style_id, STYLE_PROMPTS["professional"])
+    prompt = f"""{IDENTITY_PRESERVATION_PROMPT}
+
+STYLE TO APPLY: {style_prompt}
+
+Generate a high-quality portrait photo. You MUST keep the EXACT SAME PERSON with identical facial features, face shape, and identity. Only change the style, lighting, background, and atmosphere - NEVER change who the person is."""
     
     # Build image URL for OpenAI multimodal format
     image_url = image_data if "," in image_data else f"data:{mime_type};base64,{image_data}"
