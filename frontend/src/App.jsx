@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import UploadSection from './components/UploadSection'
 import StyleSelector from './components/StyleSelector'
 import ResultSection from './components/ResultSection'
+import HistorySection from './components/HistorySection'
 import Footer from './components/Footer'
 import { getStoredSettings } from './components/SettingsModal'
+
+const HISTORY_KEY = 'ai_portrait_history'
+const MAX_HISTORY = 12
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(null)
@@ -14,6 +18,42 @@ function App() {
   const [generatedImage, setGeneratedImage] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState(null)
+  const [history, setHistory] = useState([])
+
+  // Load history on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(HISTORY_KEY)
+      if (saved) {
+        setHistory(JSON.parse(saved))
+      }
+    } catch (e) {
+      console.error('Failed to load history', e)
+    }
+  }, [])
+
+  // Save history helper
+  const saveToHistory = (newItem) => {
+    const newHistory = [newItem, ...history].slice(0, MAX_HISTORY)
+    setHistory(newHistory)
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory))
+    } catch (e) {
+      console.error('Storage full or error', e)
+      // If full, try removing last item and retry
+      if (newHistory.length > 1) {
+        const retryHistory = newHistory.slice(0, -1)
+        setHistory(retryHistory)
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(retryHistory))
+      }
+    }
+  }
+
+  const handleDeleteHistory = (id) => {
+    const newHistory = history.filter(item => item.id !== id)
+    setHistory(newHistory)
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory))
+  }
 
   const handleImageUpload = (imageData) => {
     setUploadedImage(imageData)
@@ -56,6 +96,14 @@ function App() {
 
       if (data.success) {
         setGeneratedImage(data.image)
+        // Save to history
+        saveToHistory({
+          id: Date.now().toString(),
+          image: data.image,
+          styleId: selectedStyle.id,
+          styleName: selectedStyle.name,
+          timestamp: Date.now()
+        })
       } else {
         setError(data.message || '生成失败，请重试')
       }
@@ -73,8 +121,18 @@ function App() {
     setError(null)
   }
 
+  const handleHistorySelect = (item) => {
+    setGeneratedImage(item.image)
+    // Find original style object if possible, or recreate a minimal one
+    const style = { id: item.styleId, name: item.styleName } 
+    setSelectedStyle(style)
+    // Note: We don't have the original uploaded image for history items usually, 
+    // unless we stored it too. For now, we just show the result.
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFA]">
       <Header />
       
       <main className="flex-1">
@@ -94,7 +152,7 @@ function App() {
                                rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
                   步骤 1
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-semibold text-silver-800 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-bold text-silver-900 tracking-tight">
                   上传您的照片
                 </h2>
                 <p className="text-silver-500 mt-2 text-sm sm:text-base">
@@ -121,7 +179,7 @@ function App() {
                                    rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">
                       步骤 2
                     </span>
-                    <h2 className="text-2xl sm:text-3xl font-semibold text-silver-800 tracking-tight">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-silver-900 tracking-tight">
                       选择写真风格
                     </h2>
                     <p className="text-silver-500 mt-2 text-sm sm:text-base">
@@ -150,7 +208,7 @@ function App() {
                     disabled={isGenerating}
                     className="btn-primary text-base sm:text-lg px-8 sm:px-12 py-3.5 sm:py-4 
                              disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto
-                             touch-manipulation"
+                             shadow-lg shadow-gray-200 hover:shadow-xl hover:-translate-y-0.5"
                   >
                     {isGenerating ? (
                       <span className="flex items-center justify-center gap-3">
@@ -167,7 +225,9 @@ function App() {
                     )}
                   </button>
                   {error && (
-                    <p className="mt-4 text-red-500 text-sm">{error}</p>
+                    <p className="mt-4 text-red-500 text-sm font-medium bg-red-50 py-2 px-4 rounded-lg inline-block">
+                      {error}
+                    </p>
                   )}
                 </motion.div>
               )}
@@ -190,6 +250,14 @@ function App() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* 历史记录 */}
+            <HistorySection 
+              history={history} 
+              onSelect={handleHistorySelect}
+              onDelete={handleDeleteHistory}
+            />
+
           </motion.div>
         </section>
       </main>
@@ -200,4 +268,3 @@ function App() {
 }
 
 export default App
-
