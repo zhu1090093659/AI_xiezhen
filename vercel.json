@@ -7,19 +7,11 @@
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-      "src": "api/generate.py",
-      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/api/generate",
-      "dest": "/api/generate.py"
-    },
-    {
-      "src": "/((?!api/).*)",
+      "src": "/(.*)",
       "dest": "/frontend/$1"
     }
   ]

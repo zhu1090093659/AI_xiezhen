@@ -11,6 +11,40 @@ import { getStoredSettings } from './components/SettingsModal'
 
 const HISTORY_KEY = 'ai_portrait_history'
 const MAX_HISTORY = 12
+const MODEL_NAME = 'nano-banana-2-4k'
+
+// Core identity preservation prompt
+const IDENTITY_PRESERVATION_PROMPT = `CRITICAL REQUIREMENTS - MUST FOLLOW:
+1. PRESERVE the EXACT same person's face, facial structure, eyes, nose, mouth, skin tone, and all facial features
+2. The person in the output image MUST be the SAME person as in the input image - NOT a different person
+3. DO NOT alter, modify, or replace the face with another person's face
+4. DO NOT change bone structure, face shape, eye shape, or any identifying facial characteristics
+5. Only modify lighting, background, clothing, atmosphere, and artistic style
+6. The output must pass as a photo of the SAME individual, just in a different style/setting`
+
+// Extract image URL from API response
+function extractImageUrl(content) {
+  if (!content) return null
+  
+  // Handle base64 image
+  if (content.startsWith('data:image')) {
+    return content
+  }
+  
+  // Handle Markdown image syntax: ![alt](url)
+  const markdownMatch = content.match(/!\[.*?\]\((.*?)\)/)
+  if (markdownMatch) {
+    return markdownMatch[1]
+  }
+  
+  // Handle raw URL
+  const urlMatch = content.match(/https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|webp|gif)/i)
+  if (urlMatch) {
+    return urlMatch[0]
+  }
+  
+  return null
+}
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(null)
@@ -84,37 +118,58 @@ function App() {
     setError(null)
 
     try {
-      const response = await fetch('/api/generate', {
+      const stylePrompt = selectedStyle.prompt || `Apply ${selectedStyle.name} portrait style`
+      const prompt = `${IDENTITY_PRESERVATION_PROMPT}
+
+STYLE TO APPLY: ${stylePrompt}
+
+Generate a high-quality portrait photo. You MUST keep the EXACT SAME PERSON with identical facial features, face shape, and identity. Only change the style, lighting, background, and atmosphere - NEVER change who the person is.`
+
+      const response = await fetch(`${settings.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'X-API-Key': settings.apiKey,
-          'X-Base-URL': settings.baseUrl
+          'Authorization': `Bearer ${settings.apiKey}`
         },
         body: JSON.stringify({
-          image: uploadedImage,
-          style: selectedStyle.id,
-          prompt: selectedStyle.prompt
+          model: MODEL_NAME,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: uploadedImage } }
+              ]
+            }
+          ]
         })
       })
 
       const data = await response.json()
 
-      if (data.success) {
-        setGeneratedImage(data.image)
-        // Save to history
+      if (data.error) {
+        setError(data.error.message || '生成失败，请重试')
+        return
+      }
+
+      // Extract image from response
+      const content = data.choices?.[0]?.message?.content
+      const imageUrl = extractImageUrl(content)
+
+      if (imageUrl) {
+        setGeneratedImage(imageUrl)
         saveToHistory({
           id: Date.now().toString(),
-          image: data.image,
+          image: imageUrl,
           styleId: selectedStyle.id,
           styleName: selectedStyle.name,
           timestamp: Date.now()
         })
       } else {
-        setError(data.message || '生成失败，请重试')
+        setError('模型未返回图片，请重试')
       }
     } catch (err) {
-      setError('网络错误，请检查连接后重试')
+      setError(`请求失败: ${err.message}`)
     } finally {
       setIsGenerating(false)
     }
