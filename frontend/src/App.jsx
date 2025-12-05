@@ -250,10 +250,11 @@ Generate a high-quality portrait photo. You MUST keep the EXACT SAME PERSON with
             <AnimatePresence>
               {uploadedImage && selectedStyle && !generatedImage && (
                 <motion.div
+                  id="generate-section"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="text-center px-4"
+                  className="text-center px-4 scroll-mt-32"
                 >
                   <button
                     onClick={handleGenerate}
@@ -315,6 +316,29 @@ Generate a high-quality portrait photo. You MUST keep the EXACT SAME PERSON with
       </main>
 
       <Footer />
+
+      {/* Floating action button - scroll to generate */}
+      <AnimatePresence>
+        {uploadedImage && selectedStyle && !generatedImage && !isGenerating && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => document.getElementById('generate-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-5 py-3 
+                       bg-silver-800 text-white rounded-full shadow-lg shadow-silver-400/30
+                       hover:bg-silver-700 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span className="font-medium text-sm">开始生成</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
